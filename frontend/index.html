@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Omics Pharmacogenomics Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/plotly.js-dist@2.26.0/plotly.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-dna"></i>
+                <span>Multi-Omics Platform</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#data" class="nav-link">Data</a>
+                <a href="#models" class="nav-link">Models</a>
+                <a href="#analysis" class="nav-link">Analysis</a>
+                <a href="#docs" class="nav-link">Documentation</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Integrating Multi-Omics Data for Precision Medicine</h1>
+            <p class="hero-subtitle">AI-powered platform for pharmacogenomics using deep learning</p>
+            <div class="hero-features">
+                <div class="feature-pill">
+                    <i class="fas fa-microscope"></i>
+                    <span>Multi-Omics Integration</span>
+                </div>
+                <div class="feature-pill">
+                    <i class="fas fa-brain"></i>
+                    <span>Deep Learning</span>
+                </div>
+                <div class="feature-pill">
+                    <i class="fas fa-pills"></i>
+                    <span>Drug Response Prediction</span>
+                </div>
+                <div class="feature-pill">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Biomarker Discovery</span>
+                </div>
+            </div>
+            <div class="hero-cta">
+                <button class="btn btn-primary" onclick="showUploadModal()">
+                    <i class="fas fa-upload"></i>
+                    Upload Data
+                </button>
+                <button class="btn btn-secondary" onclick="scrollTo('analysis')">
+                    <i class="fas fa-play"></i>
+                    Start Analysis
+                </button>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="omics-diagram">
+                <div class="omics-layer" id="genomics">
+                    <i class="fas fa-dna"></i>
+                    <span>Genomics</span>
+                </div>
+                <div class="omics-layer" id="transcriptomics">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Transcriptomics</span>
+                </div>
+                <div class="omics-layer" id="proteomics">
+                    <i class="fas fa-atom"></i>
+                    <span>Proteomics</span>
+                </div>
+                <div class="fusion-layer">
+                    <i class="fas fa-brain"></i>
+                    <span>Deep Learning Fusion</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Management Section -->
+    <section id="data" class="section">
+        <div class="container">
+            <h2>Multi-Omics Data Management</h2>
+            <div class="data-overview">
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <i class="fas fa-dna"></i>
+                        <h3>Genomics</h3>
+                    </div>
+                    <div class="data-card-content">
+                        <p>Process genomic variants, SNPs, and structural variations</p>
+                        <ul>
+                            <li>1000 Genomes Project</li>
+                            <li>TCGA Genomics</li>
+                            <li>Custom VCF files</li>
+                        </ul>
+                        <button class="btn btn-outline">Upload Genomics Data</button>
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <i class="fas fa-code-branch"></i>
+                        <h3>Transcriptomics</h3>
+                    </div>
+                    <div class="data-card-content">
+                        <p>Analyze gene expression and RNA-seq data</p>
+                        <ul>
+                            <li>TCGA RNA-seq</li>
+                            <li>GTEx Expression</li>
+                            <li>Custom expression matrices</li>
+                        </ul>
+                        <button class="btn btn-outline">Upload Expression Data</button>
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <i class="fas fa-atom"></i>
+                        <h3>Proteomics</h3>
+                    </div>
+                    <div class="data-card-content">
+                        <p>Process protein abundance and modification data</p>
+                        <ul>
+                            <li>Human Protein Atlas</li>
+                            <li>ProteomicsDB</li>
+                            <li>Mass spectrometry data</li>
+                        </ul>
+                        <button class="btn btn-outline">Upload Protein Data</button>
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <i class="fas fa-pills"></i>
+                        <h3>Drug Response</h3>
+                    </div>
+                    <div class="data-card-content">
+                        <p>Integrate pharmacological response data</p>
+                        <ul>
+                            <li>GDSC Drug Sensitivity</li>
+                            <li>PharmGKB</li>
+                            <li>Clinical trial data</li>
+                        </ul>
+                        <button class="btn btn-outline">Upload Drug Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Models Section -->
+    <section id="models" class="section bg-light">
+        <div class="container">
+            <h2>Deep Learning Models</h2>
+            <div class="models-architecture">
+                <div class="architecture-diagram">
+                    <div class="model-branch">
+                        <h4>Genomics CNN</h4>
+                        <div class="model-layers">
+                            <div class="layer">Conv1D</div>
+                            <div class="layer">BatchNorm</div>
+                            <div class="layer">ReLU</div>
+                            <div class="layer">MaxPool</div>
+                        </div>
+                    </div>
+
+                    <div class="model-branch">
+                        <h4>Transcriptomics RNN</h4>
+                        <div class="model-layers">
+                            <div class="layer">LSTM</div>
+                            <div class="layer">Dropout</div>
+                            <div class="layer">Dense</div>
+                        </div>
+                    </div>
+
+                    <div class="model-branch">
+                        <h4>Proteomics FC</h4>
+                        <div class="model-layers">
+                            <div class="layer">Dense</div>
+                            <div class="layer">ReLU</div>
+                            <div class="layer">Dropout</div>
+                            <div class="layer">Dense</div>
+                        </div>
+                    </div>
+
+                    <div class="fusion-block">
+                        <h4>Multi-Modal Fusion</h4>
+                        <div class="attention-mechanism">
+                            <div class="layer attention">Attention</div>
+                            <div class="layer">Concatenate</div>
+                            <div class="layer">Dense</div>
+                            <div class="layer output">Output</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-controls">
+                    <div class="control-panel">
+                        <h3>Model Configuration</h3>
+                        <div class="form-group">
+                            <label>Model Type:</label>
+                            <select id="modelType">
+                                <option value="multi_omics_fusion">Multi-Omics Fusion</option>
+                                <option value="genomics_cnn">Genomics CNN</option>
+                                <option value="transcriptomics_rnn">Transcriptomics RNN</option>
+                                <option value="proteomics_fc">Proteomics FC</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Learning Rate:</label>
+                            <input type="number" id="learningRate" value="0.001" step="0.0001">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Batch Size:</label>
+                            <input type="number" id="batchSize" value="32">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Cross-Validation Folds:</label>
+                            <input type="number" id="cvFolds" value="5">
+                        </div>
+
+                        <button class="btn btn-primary" onclick="trainModel()">
+                            <i class="fas fa-play"></i>
+                            Start Training
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analysis Section -->
+    <section id="analysis" class="section">
+        <div class="container">
+            <h2>Analysis & Predictions</h2>
+            
+            <div class="analysis-workspace">
+                <div class="analysis-controls">
+                    <div class="prediction-panel">
+                        <h3>Drug Response Prediction</h3>
+                        
+                        <div class="form-group">
+                            <label>Patient ID:</label>
+                            <input type="text" id="patientId" placeholder="Enter patient ID">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Drug:</label>
+                            <select id="drugId">
+                                <option value="">Select drug</option>
+                                <option value="erlotinib">Erlotinib</option>
+                                <option value="gefitinib">Gefitinib</option>
+                                <option value="tamoxifen">Tamoxifen</option>
+                                <option value="warfarin">Warfarin</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Omics Data Types:</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox">
+                                    <input type="checkbox" value="genomics" checked>
+                                    <span>Genomics</span>
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" value="transcriptomics" checked>
+                                    <span>Transcriptomics</span>
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" value="proteomics">
+                                    <span>Proteomics</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="predictDrugResponse()">
+                            <i class="fas fa-magic"></i>
+                            Predict Response
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-panel">
+                    <div id="predictionResults" class="results-content" style="display: none;">
+                        <h3>Prediction Results</h3>
+                        <div class="prediction-score">
+                            <div class="score-circle">
+                                <span class="score-value" id="scoreValue">--</span>
+                                <span class="score-label">Response Probability</span>
+                            </div>
+                        </div>
+                        
+                        <div class="biomarkers-section">
+                            <h4>Key Biomarkers</h4>
+                            <div id="biomarkersList" class="biomarkers-list"></div>
+                        </div>
+
+                        <div class="interpretability-section">
+                            <h4>Model Interpretability</h4>
+                            <div class="tabs">
+                                <button class="tab-btn active" onclick="showTab('shap')">SHAP Values</button>
+                                <button class="tab-btn" onclick="showTab('attention')">Attention</button>
+                                <button class="tab-btn" onclick="showTab('features')">Feature Importance</button>
+                            </div>
+                            <div id="interpretabilityPlot" class="plot-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Multi-Omics Data</h3>
+                <button class="modal-close" onclick="hideUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-form">
+                    <div class="form-group">
+                        <label>Data Type:</label>
+                        <select id="uploadDataType">
+                            <option value="genomics">Genomics (VCF, BAM)</option>
+                            <option value="transcriptomics">Transcriptomics (CSV, TSV)</option>
+                            <option value="proteomics">Proteomics (CSV, TSV)</option>
+                            <option value="drug_response">Drug Response (CSV)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Patient ID:</label>
+                        <input type="text" id="uploadPatientId" placeholder="Enter patient identifier">
+                    </div>
+
+                    <div class="form-group">
+                        <label>File:</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop files here or click to browse</p>
+                            <input type="file" id="fileInput" multiple>
+                        </div>
+                    </div>
+
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideUploadModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="uploadFiles()">
+                    <i class="fas fa-upload"></i>
+                    Upload
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/visualizations.js"></script>
+</body>
+</html>

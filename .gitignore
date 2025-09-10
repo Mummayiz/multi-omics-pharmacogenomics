@@ -1,0 +1,228 @@
+# Multi-Omics Pharmacogenomics Platform - .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env
+.venv
+.ENV
+.env.local
+.env.*.local
+
+# Machine Learning Models
+models/saved/*.h5
+models/saved/*.pkl
+models/saved/*.pt
+models/saved/*.pth
+models/saved/*.onnx
+*.model
+*.weights
+
+# Data files
+data/raw/
+data/processed/
+data/external/
+*.vcf
+*.bam
+*.sam
+*.fastq
+*.fq
+*.gz
+*.tar.gz
+*.zip
+*.h5
+*.hdf5
+*.csv.gz
+*.tsv.gz
+*.parquet
+*.feather
+
+# Bioinformatics specific
+*.fa
+*.fasta
+*.bed
+*.gff
+*.gtf
+*.wig
+*.bigwig
+*.bw
+*.maf
+*.psl
+*.chain
+*.2bit
+
+# Logs
+logs/
+*.log
+*.out
+*.err
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+notebooks/*.ipynb
+!notebooks/example_*.ipynb
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.spyderproject
+.spyproject
+.ropeproject
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+tmp/
+temp/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# TensorFlow/Keras
+*.h5
+*.hdf5
+tensorboard_logs/
+checkpoints/
+saved_models/
+
+# PyTorch
+*.pt
+*.pth
+lightning_logs/
+
+# Configuration files with sensitive data
+.env
+.env.local
+.env.production
+config/secrets.yaml
+config/private.yaml
+*.secret
+*.key
+*.pem
+*.p12
+*.pfx
+
+# API keys and credentials
+credentials.json
+service-account.json
+.google-credentials
+.aws-credentials
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Node.js (if using Node.js tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Frontend build artifacts
+frontend/dist/
+frontend/build/
+*.min.js
+*.min.css
+
+# Documentation build
+docs/_build/
+docs/build/
+site/
+
+# Cache directories
+.cache/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.black/
+
+# Profiling
+*.prof
+*.profile
+
+# Misc
+*.orig
+*.rej
+.sass-cache/
+.connect.lock
+.npm/
+
+# Local development
+local/
+scratch/
+playground/
+
+# Backup files
+*.bak
+*~
+.backup/
+
+# Large datasets (add specific patterns as needed)
+*.tar
+*.tgz
+*.tar.bz2
+*.bz2
+
+# Experimental results
+results/
+experiments/
+outputs/
+
+# Slurm job files (for HPC)
+slurm-*.out
+*.sbatch.log
+
+# R files (if using R for analysis)
+.Rhistory
+.RData
+.Ruserdata
