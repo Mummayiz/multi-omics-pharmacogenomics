@@ -208,20 +208,10 @@ This platform implements state-of-the-art methods for:
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 🙏 Acknowledgments
 
 - Built with FastAPI, scikit-learn, and modern web technologies
 - Inspired by the latest research in multi-omics and pharmacogenomics
 - Designed for both researchers and clinicians
-
-## 📞 Support
-
-For questions or support, please open an issue on GitHub.
-
----
 
 **Made with ❤️ for advancing personalized medicine through multi-omics analysis**
