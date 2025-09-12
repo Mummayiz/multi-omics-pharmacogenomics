@@ -16,9 +16,9 @@ class ApiClient {
             return `http://${host}:8000/api/v1`;
         }
         
-        // For production/Vercel deployment, use relative paths to serverless functions
-        if (host.includes('vercel.app') || host.includes('.app')) {
-            return '/api';
+        // For production deployment, use the Railway API URL
+        if (host.includes('vercel.app') || host.includes('.app') || host.includes('netlify.app') || host.includes('github.io')) {
+            return 'https://web-production-0deaa.up.railway.app/api/v1';
         }
         
         // Default fallback
