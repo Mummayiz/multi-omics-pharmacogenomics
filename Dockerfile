@@ -29,18 +29,10 @@ ENV PYTHONUNBUFFERED=1
 # Expose ports
 EXPOSE 8000 3000
 
-# Create startup script
-RUN echo '#!/bin/bash\n\
-# Start backend in background\n\
-cd /app/backend && python main.py &\n\
-# Start frontend server\n\
-cd /app/frontend && python -m http.server 3000 &\n\
-# Wait for any process to exit\n\
-wait' > /app/start.sh && chmod +x /app/start.sh
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/api/v1/health || exit 1
 
-# Start the application
-CMD ["/app/start.sh"]
+# Start the backend application (Railway will serve frontend separately)
+WORKDIR /app/backend
+CMD ["python", "main.py"]
