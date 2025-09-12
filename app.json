@@ -1,0 +1,43 @@
+{
+  "name": "Multi-Omics Pharmacogenomics Platform",
+  "description": "Advanced platform for analyzing multi-omics data and predicting drug responses using machine learning",
+  "repository": "https://github.com/Mummayiz/multi-omics-pharmacogenomics",
+  "logo": "https://via.placeholder.com/150x150/4F46E5/FFFFFF?text=Multi-Omics",
+  "keywords": [
+    "multi-omics",
+    "pharmacogenomics",
+    "machine-learning",
+    "drug-response",
+    "genomics",
+    "transcriptomics",
+    "proteomics",
+    "personalized-medicine"
+  ],
+  "stack": "heroku-20",
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "PYTHONPATH": {
+      "description": "Python path for the application",
+      "value": "/app"
+    },
+    "PYTHONUNBUFFERED": {
+      "description": "Python unbuffered output",
+      "value": "1"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:mini"
+    }
+  ]
+}
