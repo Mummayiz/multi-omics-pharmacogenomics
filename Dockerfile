@@ -34,6 +34,13 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/api/v1/health || exit 1
 
+# Set environment variables for Python path
+ENV PYTHONPATH=/app
+
+# Copy and make entrypoint executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Start the backend application
-WORKDIR /app/backend
-CMD ["python", "main.py"]
+WORKDIR /app
+CMD ["/app/entrypoint.sh"]
