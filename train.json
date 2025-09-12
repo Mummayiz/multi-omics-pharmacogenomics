@@ -1,0 +1,1 @@
+{model_type:genomics,data_types: [genomics],hyperparameters: {},cross_validation_folds: 3}

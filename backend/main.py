@@ -12,10 +12,25 @@ import uvicorn
 import os
 from datetime import datetime
 
-# Import custom modules
-from api.routes import omics_router, model_router, analysis_router
-from utils.config import settings
-from utils.logger import get_logger
+# Import custom modules (use relative imports when running from backend directory)
+try:
+    from api.functional_routes import omics_router, model_router, analysis_router
+except ImportError:
+    try:
+        from backend.api.functional_routes import omics_router, model_router, analysis_router
+    except ImportError:
+        # Fallback to original routes
+        try:
+            from api.routes import omics_router, model_router, analysis_router
+        except ImportError:
+            from backend.api.routes import omics_router, model_router, analysis_router
+
+try:
+    from utils.config import settings
+    from utils.logger import get_logger
+except ImportError:
+    from backend.utils.config import settings
+    from backend.utils.logger import get_logger
 
 # Initialize logger
 logger = get_logger(__name__)
@@ -32,14 +47,21 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=[
+        "http://localhost:3000",  # Frontend development server
+        "http://127.0.0.1:3000",  # Alternative localhost
+        "file://",  # Allow file:// protocol
+        "*"  # Allow all origins for development
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="../frontend"), name="static")
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+if os.path.isdir(frontend_dir):
+    app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
 
 # Include API routes
 app.include_router(omics_router, prefix="/api/v1/omics", tags=["Multi-Omics Data"])
@@ -78,6 +100,15 @@ async def health_check():
             "ml_models": "loaded"     # Will be implemented
         }
     }
+
+# API v1 convenience endpoints to match frontend baseURL
+@app.get("/api/v1/")
+async def api_v1_root():
+    return await root()
+
+@app.get("/api/v1/health")
+async def api_v1_health():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 # Data models for API
 class OmicsDataUpload(BaseModel):

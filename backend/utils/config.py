@@ -4,7 +4,11 @@ Configuration settings for Multi-Omics Pharmacogenomics Platform
 
 import os
 from typing import Dict, Any
-from pydantic import BaseSettings
+
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     """Application settings"""

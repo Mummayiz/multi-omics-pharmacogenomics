@@ -29,10 +29,24 @@ function initializeApp() {
     // Set up smooth scrolling
     setupSmoothScrolling();
     
-    // Initialize API health check
-    checkAPIHealth();
+    // Initialize API health check (wait for ApiClient to be ready)
+    waitForApiClient(checkAPIHealth);
     
     console.log('Multi-Omics Platform initialized');
+}
+
+function getApi() {
+    return window.ApiClient || window.apiClient || window.API;
+}
+
+function waitForApiClient(callback, retries = 20) {
+    const api = getApi();
+    if (api && typeof api.getHealth === 'function') {
+        callback();
+        return;
+    }
+    if (retries <= 0) return;
+    setTimeout(() => waitForApiClient(callback, retries - 1), 150);
 }
 
 /**
@@ -194,9 +208,13 @@ function formatFileSize(bytes) {
  * Show upload modal
  */
 function showUploadModal() {
+    console.log('📁 Show upload modal called!');
     const modal = document.getElementById('uploadModal');
     if (modal) {
         modal.style.display = 'flex';
+        console.log('✅ Upload modal displayed');
+    } else {
+        console.error('❌ Upload modal not found!');
     }
 }
 
@@ -227,9 +245,13 @@ function hideUploadModal() {
  * Upload files
  */
 async function uploadFiles() {
+    console.log('🚀 Upload files function called!');
+    
     const dataType = document.getElementById('uploadDataType').value;
     const patientId = document.getElementById('uploadPatientId').value;
     const fileInput = document.getElementById('fileInput');
+    
+    console.log('Upload params:', { dataType, patientId, files: fileInput.files });
     
     if (!patientId.trim()) {
         showNotification('Please enter a patient ID', 'warning');
@@ -245,17 +267,36 @@ async function uploadFiles() {
     document.getElementById('uploadProgress').style.display = 'block';
     
     try {
+        console.log('Starting upload process...');
         for (let i = 0; i < fileInput.files.length; i++) {
             const file = fileInput.files[i];
+            console.log(`Uploading file ${i + 1}/${fileInput.files.length}:`, file.name);
             await uploadSingleFile(file, dataType, patientId, i + 1, fileInput.files.length);
         }
         
-        showNotification('Files uploaded successfully!', 'success');
-        hideUploadModal();
+        console.log('All files uploaded successfully');
+        
+        // Show success in modal
+        const progressDiv = document.getElementById('uploadProgress');
+        progressDiv.innerHTML = `
+            <div style="text-align: center; color: #10b981; font-weight: bold;">
+                <i class="fas fa-check-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <div>✅ Files uploaded successfully!</div>
+                <div style="font-size: 14px; margin-top: 5px;">Processing in background...</div>
+            </div>
+        `;
+        
+        // Show notification
+        showNotification('✅ Files uploaded successfully!', 'success');
+        
+        // Wait a moment before closing modal to show success
+        setTimeout(() => {
+            hideUploadModal();
+        }, 2000);
         
     } catch (error) {
         console.error('Upload error:', error);
-        showNotification('Upload failed: ' + error.message, 'error');
+        showNotification('❌ Upload failed: ' + error.message, 'error');
     }
 }
 
@@ -263,24 +304,32 @@ async function uploadFiles() {
  * Upload single file
  */
 async function uploadSingleFile(file, dataType, patientId, current, total) {
+    console.log('Uploading file:', file.name, 'Type:', dataType, 'Patient:', patientId);
+    
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await ApiClient.uploadOmicsData(patientId, dataType, formData);
-    
-    // Update progress
-    const progress = (current / total) * 100;
-    document.getElementById('progressFill').style.width = `${progress}%`;
-    document.getElementById('progressText').textContent = `${Math.round(progress)}%`;
-    
-    return response;
+    try {
+        const response = await getApi().uploadOmicsData(patientId, dataType, formData);
+        console.log('Upload response:', response);
+        
+        // Update progress
+        const progress = (current / total) * 100;
+        document.getElementById('progressFill').style.width = `${progress}%`;
+        document.getElementById('progressText').textContent = `${Math.round(progress)}%`;
+        
+        return response;
+    } catch (error) {
+        console.error('Upload error in uploadSingleFile:', error);
+        throw error;
+    }
 }
 
 /**
  * Train model
  */
 async function trainModel() {
-    const modelType = document.getElementById('modelType').value;
+    const uiModelType = document.getElementById('modelType').value;
     const learningRate = parseFloat(document.getElementById('learningRate').value);
     const batchSize = parseInt(document.getElementById('batchSize').value);
     const cvFolds = parseInt(document.getElementById('cvFolds').value);
@@ -292,10 +341,16 @@ async function trainModel() {
     
     const dataTypes = ['genomics', 'transcriptomics']; // Default selection
     
+    // Map UI model types to backend lightweight types
+    let modelType = uiModelType;
+    if (uiModelType === 'genomics_cnn') modelType = 'genomics';
+    else if (uiModelType === 'transcriptomics_rnn') modelType = 'transcriptomics';
+    else if (uiModelType === 'proteomics_fc') modelType = 'proteomics';
+
     try {
         showNotification('Starting model training...', 'info');
         
-        const response = await ApiClient.trainModel(modelType, dataTypes, hyperparameters, cvFolds);
+        const response = await getApi().trainModel(modelType, dataTypes, hyperparameters, cvFolds);
         
         showNotification(`Training started! Job ID: ${response.job_id}`, 'success');
         
@@ -314,7 +369,7 @@ async function trainModel() {
 async function monitorTrainingProgress(jobId) {
     const interval = setInterval(async () => {
         try {
-            const status = await ApiClient.getTrainingStatus(jobId);
+            const status = await getApi().getTrainingStatus(jobId);
             
             console.log('Training status:', status);
             
@@ -359,7 +414,7 @@ async function predictDrugResponse() {
     try {
         showNotification('Making prediction...', 'info');
         
-        const response = await ApiClient.predictDrugResponse(patientId, drugId, omicsDataTypes);
+        const response = await getApi().predictDrugResponse(patientId, drugId, omicsDataTypes);
         
         displayPredictionResults(response);
         showNotification('Prediction completed!', 'success');
@@ -382,7 +437,7 @@ function displayPredictionResults(prediction) {
     resultsDiv.style.display = 'block';
     
     // Update score
-    const probability = prediction.prediction.response_probability;
+    const probability = prediction.prediction.predicted_response;
     scoreValue.textContent = (probability * 100).toFixed(1) + '%';
     
     // Update biomarkers
@@ -391,7 +446,7 @@ function displayPredictionResults(prediction) {
         const biomarkerDiv = document.createElement('div');
         biomarkerDiv.className = 'biomarker-item';
         biomarkerDiv.innerHTML = `
-            <span class="biomarker-name">${biomarker.gene || biomarker.protein}</span>
+            <span class="biomarker-name">${biomarker.name}</span>
             <span class="biomarker-importance">Importance: ${(biomarker.importance * 100).toFixed(1)}%</span>
         `;
         biomarkersList.appendChild(biomarkerDiv);
@@ -414,18 +469,30 @@ function showTab(tabName) {
     });
     document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
     
-    // Update plot
+    // Update plot using visualization manager
     const plotContainer = document.getElementById('interpretabilityPlot');
     
     switch (tabName) {
         case 'shap':
-            plotContainer.innerHTML = '<p>SHAP values visualization would be displayed here</p>';
+            if (window.visualizationManager) {
+                window.visualizationManager.createShapPlot('interpretabilityPlot', AppState.currentPrediction);
+            } else {
+                plotContainer.innerHTML = '<p>SHAP values visualization would be displayed here</p>';
+            }
             break;
         case 'attention':
-            plotContainer.innerHTML = '<p>Attention mechanism visualization would be displayed here</p>';
+            if (window.visualizationManager) {
+                window.visualizationManager.createAttentionHeatmap('interpretabilityPlot', AppState.currentPrediction);
+            } else {
+                plotContainer.innerHTML = '<p>Attention mechanism visualization would be displayed here</p>';
+            }
             break;
         case 'features':
-            plotContainer.innerHTML = '<p>Feature importance plot would be displayed here</p>';
+            if (window.visualizationManager) {
+                window.visualizationManager.createFeatureImportanceChart('interpretabilityPlot', AppState.currentPrediction);
+            } else {
+                plotContainer.innerHTML = '<p>Feature importance plot would be displayed here</p>';
+            }
             break;
     }
     
@@ -437,7 +504,7 @@ function showTab(tabName) {
  */
 async function checkAPIHealth() {
     try {
-        const health = await ApiClient.getHealth();
+        const health = await getApi().getHealth();
         console.log('API Health:', health);
         
         if (health.status === 'healthy') {
@@ -482,7 +549,12 @@ function showNotification(message, type = 'info', duration = 4000) {
             }
             
             .notification-info { background: #3b82f6; color: white; }
-            .notification-success { background: #10b981; color: white; }
+            .notification-success { 
+                background: #10b981; 
+                color: white; 
+                border: 2px solid #059669;
+                font-weight: bold;
+            }
             .notification-warning { background: #f59e0b; color: white; }
             .notification-error { background: #ef4444; color: white; }
             

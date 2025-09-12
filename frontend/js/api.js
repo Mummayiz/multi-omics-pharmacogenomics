@@ -4,8 +4,25 @@
 
 class ApiClient {
     constructor() {
-        this.baseURL = 'http://localhost:8000/api/v1';
+        // Detect environment and set appropriate base URL
+        this.baseURL = this.detectApiBaseUrl();
         this.timeout = 30000; // 30 seconds
+    }
+    
+    detectApiBaseUrl() {
+        // In development, target the backend on the same host at port 8000 to avoid IPv4/IPv6 mismatch
+        const host = window.location.hostname;
+        if (host === 'localhost' || host === '127.0.0.1') {
+            return `http://${host}:8000/api/v1`;
+        }
+        
+        // For production/Vercel deployment, use relative paths to serverless functions
+        if (host.includes('vercel.app') || host.includes('.app')) {
+            return '/api';
+        }
+        
+        // Default fallback
+        return '/api/v1';
     }
 
     /**
@@ -13,6 +30,7 @@ class ApiClient {
      */
     async makeRequest(method, endpoint, data = null, isFormData = false) {
         const url = `${this.baseURL}${endpoint}`;
+        console.log('API Client - Making request:', { method, url, isFormData, dataType: typeof data });
         
         const options = {
             method: method,
@@ -30,15 +48,21 @@ class ApiClient {
         }
 
         try {
+            console.log('API Client - Sending request with options:', options);
             const response = await fetch(url, options);
+            console.log('API Client - Response received:', { status: response.status, statusText: response.statusText });
             
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
+                console.error('API Client - Error response:', errorData);
                 throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
             }
 
-            return await response.json();
+            const result = await response.json();
+            console.log('API Client - Success response:', result);
+            return result;
         } catch (error) {
+            console.error('API Client - Request failed:', error);
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
                 throw new Error('Network error: Unable to connect to the server');
             }
@@ -48,7 +72,18 @@ class ApiClient {
 
     // Health and Status
     async getHealth() {
-        return await this.makeRequest('GET', '/health');
+        try {
+            // Use the correct API v1 health endpoint
+            return await this.makeRequest('GET', '/health');
+        } catch (error) {
+            // If API v1 endpoint fails, try direct health endpoint
+            try {
+                const response = await fetch(`${this.baseURL.replace('/api/v1', '')}/health`);
+                return await response.json();
+            } catch (directError) {
+                throw error; // Return original error
+            }
+        }
     }
 
     async getStatus() {
@@ -58,6 +93,7 @@ class ApiClient {
     // Multi-Omics Data Endpoints
     async uploadOmicsData(patientId, dataType, formData) {
         const endpoint = `/omics/upload?patient_id=${encodeURIComponent(patientId)}&data_type=${encodeURIComponent(dataType)}`;
+        console.log('API Client - Upload request:', { endpoint, patientId, dataType, formData });
         return await this.makeRequest('POST', endpoint, formData, true);
     }
 

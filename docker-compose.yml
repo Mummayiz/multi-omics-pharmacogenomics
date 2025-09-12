@@ -8,8 +8,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/multiomics
-      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=sqlite:////app/multi_omics.db
       - DEVICE=cpu
       - DEBUG=false
       - LOG_LEVEL=INFO
@@ -17,38 +16,6 @@ services:
       - ./data:/app/data
       - ./models:/app/models
       - ./logs:/app/logs
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - multi-omics-network
-    restart: unless-stopped
-
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: multi-omics-postgres
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=multiomics
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
-    ports:
-      - "5432:5432"
-    networks:
-      - multi-omics-network
-    restart: unless-stopped
-
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: multi-omics-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
     networks:
       - multi-omics-network
     restart: unless-stopped
@@ -63,7 +30,6 @@ services:
     volumes:
       - ./frontend:/usr/share/nginx/html
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
       - multi-omics-api
     networks:
@@ -84,10 +50,6 @@ services:
     networks:
       - multi-omics-network
     restart: unless-stopped
-
-volumes:
-  postgres_data:
-  redis_data:
 
 networks:
   multi-omics-network:
