@@ -434,27 +434,76 @@ class MultiOmicsFusionModel:
         if self.fusion_strategy == 'concatenation':
             # Concatenate original features (dimensionality reduced)
             if 'genomics' in X_dict and self.genomics_model.is_fitted:
-                # Use feature selection to reduce dimensionality
-                genomics_features = self.genomics_model.pipeline.named_steps['selector'].transform(
-                    self.genomics_model.pipeline.named_steps['scaler'].transform(X_dict['genomics'])
-                )[:, :100]  # Take top 100 features
-                features.append(genomics_features)
+                try:
+                    # Use feature selection to reduce dimensionality
+                    genomics_features = self.genomics_model.pipeline.named_steps['selector'].transform(
+                        self.genomics_model.pipeline.named_steps['scaler'].transform(X_dict['genomics'])
+                    )
+                    # Take up to 100 features, or all if fewer
+                    n_features = min(100, genomics_features.shape[1])
+                    features.append(genomics_features[:, :n_features])
+                except Exception as e:
+                    # Fallback: use raw features with padding/truncation
+                    genomics_features = self.genomics_model.pipeline.named_steps['scaler'].transform(X_dict['genomics'])
+                    n_features = min(100, genomics_features.shape[1])
+                    if genomics_features.shape[1] < 100:
+                        # Pad with zeros
+                        pad_width = 100 - genomics_features.shape[1]
+                        padding = np.zeros((genomics_features.shape[0], pad_width))
+                        genomics_features = np.hstack([genomics_features, padding])
+                    features.append(genomics_features[:, :100])
             
             if 'transcriptomics' in X_dict and self.transcriptomics_model.is_fitted:
-                transcriptomics_features = self.transcriptomics_model.pipeline.named_steps['scaler'].transform(
-                    X_dict['transcriptomics']
-                )
-                if 'pca' in self.transcriptomics_model.pipeline.named_steps:
-                    transcriptomics_features = self.transcriptomics_model.pipeline.named_steps['pca'].transform(
-                        transcriptomics_features
+                try:
+                    transcriptomics_features = self.transcriptomics_model.pipeline.named_steps['scaler'].transform(
+                        X_dict['transcriptomics']
                     )
-                features.append(transcriptomics_features)
+                    if 'pca' in self.transcriptomics_model.pipeline.named_steps:
+                        transcriptomics_features = self.transcriptomics_model.pipeline.named_steps['pca'].transform(
+                            transcriptomics_features
+                        )
+                    # Ensure consistent feature count
+                    n_features = min(100, transcriptomics_features.shape[1])
+                    if transcriptomics_features.shape[1] < 100:
+                        pad_width = 100 - transcriptomics_features.shape[1]
+                        padding = np.zeros((transcriptomics_features.shape[0], pad_width))
+                        transcriptomics_features = np.hstack([transcriptomics_features, padding])
+                    features.append(transcriptomics_features[:, :100])
+                except Exception as e:
+                    # Fallback: use raw features
+                    transcriptomics_features = self.transcriptomics_model.pipeline.named_steps['scaler'].transform(
+                        X_dict['transcriptomics']
+                    )
+                    n_features = min(100, transcriptomics_features.shape[1])
+                    if transcriptomics_features.shape[1] < 100:
+                        pad_width = 100 - transcriptomics_features.shape[1]
+                        padding = np.zeros((transcriptomics_features.shape[0], pad_width))
+                        transcriptomics_features = np.hstack([transcriptomics_features, padding])
+                    features.append(transcriptomics_features[:, :100])
             
             if 'proteomics' in X_dict and self.proteomics_model.is_fitted:
-                proteomics_features = self.proteomics_model.pipeline.named_steps['scaler'].transform(
-                    X_dict['proteomics']
-                )
-                features.append(proteomics_features)
+                try:
+                    proteomics_features = self.proteomics_model.pipeline.named_steps['scaler'].transform(
+                        X_dict['proteomics']
+                    )
+                    # Ensure consistent feature count
+                    n_features = min(100, proteomics_features.shape[1])
+                    if proteomics_features.shape[1] < 100:
+                        pad_width = 100 - proteomics_features.shape[1]
+                        padding = np.zeros((proteomics_features.shape[0], pad_width))
+                        proteomics_features = np.hstack([proteomics_features, padding])
+                    features.append(proteomics_features[:, :100])
+                except Exception as e:
+                    # Fallback: use raw features
+                    proteomics_features = self.proteomics_model.pipeline.named_steps['scaler'].transform(
+                        X_dict['proteomics']
+                    )
+                    n_features = min(100, proteomics_features.shape[1])
+                    if proteomics_features.shape[1] < 100:
+                        pad_width = 100 - proteomics_features.shape[1]
+                        padding = np.zeros((proteomics_features.shape[0], pad_width))
+                        proteomics_features = np.hstack([proteomics_features, padding])
+                    features.append(proteomics_features[:, :100])
         
         elif self.fusion_strategy == 'stacking':
             # Use predictions from individual models as features

@@ -101,7 +101,7 @@
                             <li>TCGA Genomics</li>
                             <li>Custom VCF files</li>
                         </ul>
-                        <button class="btn btn-outline">Upload Genomics Data</button>
+                        <button class="btn btn-outline" onclick="showUploadModal('genomics')">Upload Genomics Data</button>
                     </div>
                 </div>
 
@@ -117,7 +117,7 @@
                             <li>GTEx Expression</li>
                             <li>Custom expression matrices</li>
                         </ul>
-                        <button class="btn btn-outline">Upload Expression Data</button>
+                        <button class="btn btn-outline" onclick="showUploadModal('transcriptomics')">Upload Expression Data</button>
                     </div>
                 </div>
 
@@ -133,7 +133,7 @@
                             <li>ProteomicsDB</li>
                             <li>Mass spectrometry data</li>
                         </ul>
-                        <button class="btn btn-outline">Upload Protein Data</button>
+                        <button class="btn btn-outline" onclick="showUploadModal('proteomics')">Upload Protein Data</button>
                     </div>
                 </div>
 
@@ -149,7 +149,7 @@
                             <li>PharmGKB</li>
                             <li>Clinical trial data</li>
                         </ul>
-                        <button class="btn btn-outline">Upload Drug Data</button>
+                        <button class="btn btn-outline" onclick="showUploadModal('drug_response')">Upload Drug Data</button>
                     </div>
                 </div>
             </div>
@@ -364,6 +364,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="hideUploadModal()">Cancel</button>
+                <button class="btn btn-info" onclick="testFileInput()" style="margin-right: 10px;">Test</button>
                 <button class="btn btn-primary" onclick="uploadFiles()">
                     <i class="fas fa-upload"></i>
                     Upload

@@ -336,3 +336,7 @@ const apiClient = new ApiClient();
 
 // Export for use in other modules
 window.ApiClient = apiClient;
+
+// Debug: Log that API client is loaded
+console.log('✅ API Client loaded successfully:', apiClient);
+alert('✅ API Client loaded successfully!'); // Debug alert

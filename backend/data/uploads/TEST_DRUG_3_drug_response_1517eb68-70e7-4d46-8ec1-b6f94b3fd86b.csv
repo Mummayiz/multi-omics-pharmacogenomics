@@ -1,0 +1,6 @@
+patient_id,drug_name,response
+P001,erlotinib,0.75
+P002,erlotinib,0.45
+P003,gefitinib,0.82
+P004,gefitinib,0.38
+P005,tamoxifen,0.91

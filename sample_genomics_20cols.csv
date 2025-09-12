@@ -1,0 +1,6 @@
+patient_id,gene_id,chromosome,position,ref_allele,alt_allele,genotype,allele_frequency,quality_score,read_depth,phred_score,consequence,impact,clinical_significance,population_frequency,zygosity,inheritance,penetrance,severity,confidence
+P001,BRCA1,17,43094691,G,A,0/1,0.45,99.5,120,35,missense_variant,MODERATE,pathogenic,0.001,heterozygous,autosomal_dominant,high,moderate,high
+P001,BRCA2,13,32315479,C,T,1/1,0.95,98.2,95,32,stop_gained,HIGH,pathogenic,0.0005,homozygous,autosomal_recessive,complete,severe,high
+P001,TP53,17,7577120,G,C,0/1,0.52,99.8,110,38,missense_variant,MODERATE,pathogenic,0.002,heterozygous,autosomal_dominant,high,moderate,high
+P001,EGFR,7,55241707,A,G,0/0,0.12,97.5,85,30,synonymous_variant,LOW,benign,0.15,homozygous_reference,autosomal_dominant,low,mild,medium
+P001,KRAS,12,25398284,C,A,0/1,0.48,99.1,105,36,missense_variant,MODERATE,pathogenic,0.003,heterozygous,autosomal_dominant,high,moderate,high

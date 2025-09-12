@@ -1,481 +1,227 @@
 # Multi-Omics Pharmacogenomics Platform
 
-**Integrating Multi-Omics Data for Precision Medicine in Pharmacogenomics Using Deep Learning**
+A comprehensive platform for analyzing multi-omics data and predicting drug responses using machine learning. This platform integrates genomics, transcriptomics, proteomics, and drug response data to provide personalized medicine insights.
 
-A comprehensive AI-powered platform for analyzing multi-omics data to predict drug responses and discover biomarkers in precision medicine.
+## 🚀 Features
 
-![Platform Overview](docs/images/platform-overview.png)
+### Data Processing
+- **Flexible Data Upload**: Supports CSV files with any number of columns (3-20+)
+- **Multi-Omics Integration**: Genomics, Transcriptomics, Proteomics, Drug Response
+- **Automatic Data Validation**: Robust error handling and data type conversion
+- **Real-time Processing**: Background data processing with progress tracking
 
-## 🧬 Overview
+### Machine Learning
+- **Multi-Omics Fusion Models**: Combines different omics data types
+- **Drug Response Prediction**: Predicts patient response to specific drugs
+- **Biomarker Discovery**: Identifies key biomarkers and pathways
+- **Model Interpretability**: SHAP values and feature importance analysis
 
-This platform combines genomics, transcriptomics, and proteomics data using advanced deep learning techniques to predict patient-specific drug responses and identify biomarkers for personalized medicine. The system implements state-of-the-art multi-branch neural networks with attention mechanisms for cross-omics integration.
-
-### Key Features
-
-- **🔬 Multi-Omics Integration**: Process and integrate genomics, transcriptomics, and proteomics data
-- **🧠 Deep Learning Models**: CNN, RNN, and fusion architectures with attention mechanisms  
-- **💊 Drug Response Prediction**: Patient-specific pharmacological response prediction
-- **📊 Biomarker Discovery**: Identification of genomic and molecular biomarkers
-- **🔍 Model Interpretability**: SHAP values, attention visualization, and feature importance
-- **⚡ Scalable Processing**: Distributed computing support for large datasets
-- **🌐 Web Interface**: Modern, responsive frontend for data visualization and analysis
+### User Interface
+- **Modern Web Interface**: Clean, responsive design
+- **Interactive Visualizations**: Charts and graphs for data exploration
+- **Real-time Updates**: Live progress tracking and notifications
+- **Individual Upload Buttons**: Pre-selected data type uploads
 
 ## 🏗️ Architecture
 
-### System Components
+### Backend (FastAPI)
+- **API Layer**: RESTful endpoints for all operations
+- **Data Processing**: Flexible pipeline for different omics data types
+- **Machine Learning**: Lightweight ML models using scikit-learn
+- **Database**: SQLite for data persistence
+- **Background Tasks**: Asynchronous data processing
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend API   │    │  Deep Learning  │
-│                 │    │                 │    │     Models      │
-│ • React/HTML/JS │◄──►│ • FastAPI       │◄──►│ • TensorFlow    │
-│ • Visualizations│    │ • Data Pipeline │    │ • PyTorch       │
-│ • User Interface│    │ • Model Training│    │ • Multi-branch  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                ▲
-                                │
-                       ┌─────────────────┐
-                       │   Data Storage  │
-                       │                 │
-                       │ • Multi-omics   │
-                       │ • Preprocessed  │
-                       │ • Model weights │
-                       └─────────────────┘
-```
+### Frontend (Vanilla HTML/CSS/JS)
+- **Responsive Design**: Works on desktop and mobile
+- **Interactive Charts**: Chart.js and Plotly.js visualizations
+- **Real-time Communication**: AJAX calls to backend API
+- **User-friendly Interface**: Intuitive upload and analysis workflows
 
-### Model Architecture
+## 📊 Supported Data Types
 
-#### Multi-Branch Deep Learning Framework
+### Genomics Data
+- **VCF Files**: Variant call format files
+- **CSV Format**: Patient variants with columns like:
+  - `patient_id`, `gene_id`, `chromosome`, `position`
+  - `ref_allele`, `alt_allele`, `genotype`
+  - `allele_frequency`, `quality_score`, `read_depth`
+  - `consequence`, `impact`, `clinical_significance`
 
-1. **Genomics Branch (CNN)**
-   - 1D Convolutional layers for variant analysis
-   - Multi-scale feature extraction
-   - Batch normalization and dropout
+### Transcriptomics Data
+- **Gene Expression**: RNA-seq data
+- **CSV Format**: Genes as rows, samples as columns
+- **Normalization**: TPM, RPKM, log2 transformation
+- **Quality Control**: Low expression filtering
 
-2. **Transcriptomics Branch (RNN/LSTM)**
-   - Bidirectional LSTM for gene expression
-   - Temporal pattern recognition
-   - Sequence-to-vector encoding
+### Proteomics Data
+- **Protein Abundance**: Mass spectrometry data
+- **CSV Format**: Proteins as rows, samples as columns
+- **Missing Value Imputation**: KNN imputation
+- **Normalization**: Median centering, quantile normalization
 
-3. **Proteomics Branch (Dense)**
-   - Fully connected layers for protein abundance
-   - Feature selection and normalization
-   - Protein interaction modeling
+### Drug Response Data
+- **Clinical Data**: Patient drug responses
+- **CSV Format**: Patient ID, drug name, response score
+- **Response Prediction**: Binary and continuous outcomes
 
-4. **Fusion Layer**
-   - Late fusion with attention mechanism
-   - Cross-omics feature integration
-   - Final prediction layer
+## 🛠️ Installation
 
-## 📋 Requirements
+### Prerequisites
+- Python 3.8+
+- pip (Python package manager)
 
-### System Requirements
+### Quick Start
 
-- **OS**: Windows 10+, macOS 10.15+, or Linux (Ubuntu 18.04+)
-- **Python**: 3.8 or higher
-- **RAM**: 16GB minimum, 32GB recommended
-- **GPU**: NVIDIA GPU with CUDA support (optional but recommended)
-- **Storage**: 50GB free space for data and models
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/multi-omics-pharmacogenomics-platform.git
+   cd multi-omics-pharmacogenomics-platform
+   ```
 
-### Data Requirements
+2. **Install dependencies**
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
 
-#### Supported Data Types
+3. **Start the backend**
+   ```bash
+   cd backend
+   python main.py
+   ```
 
-| Omics Type | Formats | Description |
-|------------|---------|-------------|
-| Genomics | VCF, BAM, FASTQ | Variant calls, sequence alignments |
-| Transcriptomics | CSV, TSV, H5 | Gene expression matrices |
-| Proteomics | CSV, mzML, RAW | Protein abundance data |
-| Drug Response | CSV, JSON | Pharmacological response data |
-
-#### Datasets
-
-- **1000 Genomes Project**: Human genetic variation
-- **TCGA**: Cancer genomics and transcriptomics
-- **GTEx**: Tissue-specific gene expression
-- **Human Protein Atlas**: Protein abundance data
-- **GDSC**: Drug sensitivity in cancer cell lines
-- **PharmGKB**: Pharmacogenomics knowledge base
-
-## 🚀 Installation
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/multi-omics-pharmacogenomics-platform.git
-cd multi-omics-pharmacogenomics-platform
-```
-
-### 2. Backend Setup
-
-```bash
-# Create virtual environment
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-### 3. Frontend Setup
-
-```bash
-cd ../frontend
-# No additional setup required for vanilla HTML/CSS/JS
-# Open index.html in a web browser or serve with a local server
-```
-
-### 4. Data Preparation
-
-```bash
-# Create data directories
-mkdir -p data/raw/{genomics,transcriptomics,proteomics,drug_response}
-mkdir -p data/processed
-mkdir -p models/saved
-
-# Download sample datasets (optional)
-python scripts/download_sample_data.py
-```
-
-## 💻 Usage
-
-### Starting the Backend
-
-```bash
-cd backend
-python main.py
-# API will be available at http://localhost:8000
-```
-
-### Accessing the Web Interface
-
-1. Open `frontend/index.html` in your web browser
-2. Or serve with a local HTTP server:
+4. **Start the frontend** (in a new terminal)
    ```bash
    cd frontend
    python -m http.server 3000
-   # Access at http://localhost:3000
    ```
 
-### API Documentation
-
-Interactive API documentation is available at:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
-### Basic Workflow
-
-1. **Data Upload**
-   ```python
-   # Upload multi-omics data via API or web interface
-   POST /api/v1/omics/upload
+5. **Open in browser**
    ```
-
-2. **Data Preprocessing**
-   ```python
-   from backend.data_processing.preprocessing import preprocess_multi_omics_data
-   
-   # Preprocess uploaded data
-   processed_data = preprocess_multi_omics_data(raw_data, config)
+   http://localhost:3000
    ```
-
-3. **Model Training**
-   ```python
-   # Train multi-omics fusion model
-   POST /api/v1/models/train
-   {
-     "model_type": "multi_omics_fusion",
-     "data_types": ["genomics", "transcriptomics", "proteomics"],
-     "hyperparameters": {...}
-   }
-   ```
-
-4. **Drug Response Prediction**
-   ```python
-   # Predict drug response for a patient
-   POST /api/v1/analysis/predict
-   {
-     "patient_id": "PATIENT_001",
-     "drug_id": "erlotinib",
-     "omics_data_types": ["genomics", "transcriptomics"]
-   }
-   ```
-
-5. **Result Interpretation**
-   ```python
-   # Get model explanations
-   POST /api/v1/analysis/explain
-   {
-     "prediction_id": "PRED_123",
-     "explanation_method": "shap"
-   }
-   ```
-
-## 📊 Data Processing Pipeline
-
-### 1. Data Ingestion
-- Multi-format file parsing (VCF, BAM, CSV, etc.)
-- Quality control and validation
-- Metadata extraction and standardization
-
-### 2. Preprocessing
-
-#### Genomics Data
-- Variant quality filtering (QUAL > 30)
-- Minor allele frequency filtering (MAF > 0.01)
-- Genotype encoding (0/0→0, 0/1→1, 1/1→2)
-- Missing value imputation
-
-#### Transcriptomics Data
-- Low expression filtering
-- Log2 transformation with pseudocount
-- TPM/FPKM normalization
-- Batch effect correction
-
-#### Proteomics Data
-- Detection rate filtering (>50% samples)
-- Missing value imputation (KNN)
-- Median normalization
-- Log transformation
-
-### 3. Integration
-- Sample alignment across omics types
-- Dimensionality reduction (PCA/t-SNE)
-- Feature concatenation with prefixes
-- Cross-validation splitting
-
-## 🤖 Model Training
-
-### Configuration
-
-```python
-model_config = {
-    "genomics": {
-        "input_shape": (23, 1000000, 1),
-        "conv_layers": [64, 128, 256],
-        "kernel_sizes": [3, 5, 7],
-        "dropout_rate": 0.3
-    },
-    "transcriptomics": {
-        "input_shape": (None, 20000),
-        "rnn_units": [128, 64],
-        "rnn_type": "LSTM",
-        "dropout_rate": 0.4
-    },
-    "proteomics": {
-        "input_shape": (10000,),
-        "hidden_layers": [512, 256, 128],
-        "dropout_rate": 0.3
-    },
-    "fusion": {
-        "attention_dim": 64,
-        "fusion_type": "late",
-        "final_layers": [256, 128, 64]
-    }
-}
-```
-
-### Training Process
-
-1. **Data Splitting**: 70% train, 15% validation, 15% test
-2. **Hyperparameter Tuning**: Grid search with cross-validation
-3. **Model Training**: Multi-GPU support with distributed training
-4. **Evaluation**: Performance metrics and statistical validation
-5. **Model Saving**: Serialized models and configuration
-
-### Performance Metrics
-
-- **Regression**: MSE, MAE, R², Pearson correlation
-- **Classification**: Accuracy, Precision, Recall, F1-score, AUC
-- **Cross-validation**: 5-fold stratified CV
-
-## 📈 Model Interpretability
-
-### SHAP (SHapley Additive exPlanations)
-- Feature importance across omics types
-- Individual prediction explanations
-- Summary plots and waterfall charts
-
-### Attention Visualization
-- Cross-omics attention weights
-- Feature interaction heatmaps
-- Attention head analysis
-
-### Biomarker Discovery
-- Statistical significance testing
-- Effect size calculation
-- Pathway enrichment analysis
-
-## 🔧 Configuration
-
-### Environment Variables (.env)
-
-```env
-# Database
-DATABASE_URL=sqlite:///multi_omics.db
-
-# Machine Learning
-DEVICE=cuda  # cpu, cuda, mps
-BATCH_SIZE=32
-MAX_EPOCHS=100
-LEARNING_RATE=0.001
-
-# Data Processing
-MAX_FILE_SIZE=500000000  # 500MB
-REFERENCE_GENOME=GRCh38
-
-# API Settings
-HOST=0.0.0.0
-PORT=8000
-DEBUG=false
-
-# Logging
-LOG_LEVEL=INFO
-LOG_FILE=./logs/app.log
-```
-
-### Model Configurations
-
-See `backend/utils/config.py` for detailed model configurations.
 
 ## 📁 Project Structure
 
 ```
 multi-omics-pharmacogenomics-platform/
-├── backend/
-│   ├── api/
-│   │   └── routes.py              # API endpoints
-│   ├── data_processing/
-│   │   └── preprocessing.py       # Data preprocessing pipeline
-│   ├── models/
-│   │   └── architectures.py       # Deep learning models
-│   ├── utils/
-│   │   ├── config.py             # Configuration settings
-│   │   └── logger.py             # Logging utilities
-│   ├── main.py                   # FastAPI application
-│   └── requirements.txt          # Python dependencies
-├── frontend/
-│   ├── css/
-│   │   └── style.css             # Styling
-│   ├── js/
-│   │   ├── main.js               # Main application logic
-│   │   ├── api.js                # API client
-│   │   └── visualizations.js     # Data visualization
-│   └── index.html                # Main webpage
-├── data/
-│   ├── raw/                      # Raw multi-omics data
-│   └── processed/                # Processed data
-├── models/
-│   └── saved/                    # Trained model weights
-├── notebooks/
-│   ├── exploration/              # Data exploration notebooks
-│   └── experiments/              # Model experiments
-├── docs/                         # Documentation
-├── scripts/                      # Utility scripts
-└── README.md                     # This file
+├── backend/                    # FastAPI backend
+│   ├── api/                   # API routes
+│   ├── data_processing/       # Data processing pipeline
+│   ├── database/              # Database layer
+│   ├── models/                # ML models
+│   ├── utils/                 # Utilities
+│   └── main.py               # Main application
+├── frontend/                  # Web frontend
+│   ├── css/                  # Stylesheets
+│   ├── js/                   # JavaScript
+│   └── index.html            # Main page
+├── data/                     # Data storage
+│   ├── raw/                  # Raw uploaded data
+│   └── processed/            # Processed data
+├── models/                   # Trained models
+│   └── saved/                # Saved model files
+├── logs/                     # Application logs
+├── scripts/                  # Utility scripts
+└── docs/                     # Documentation
 ```
 
-## 🧪 Testing
+## 🧪 Sample Data
 
-### Unit Tests
-```bash
-cd backend
-python -m pytest tests/ -v
-```
+The repository includes sample datasets for testing:
 
-### Integration Tests
-```bash
-python -m pytest tests/integration/ -v
-```
+- `sample_genomics_data.csv` - 15-column genomics data
+- `sample_genomics_20cols.csv` - 20-column genomics data
+- `sample_transcriptomics_5cols.csv` - 5-column transcriptomics data
+- `sample_proteomics_8cols.csv` - 8-column proteomics data
+- `sample_drug_response_3cols.csv` - 3-column drug response data
 
-### API Tests
-```bash
-python -m pytest tests/api/ -v
-```
+## 🔧 Usage
 
-## 🚀 Deployment
+### 1. Upload Data
+- Click "Upload Data" or use individual data type buttons
+- Select your CSV file
+- Choose data type (genomics, transcriptomics, proteomics, drug_response)
+- Enter patient ID
+- Click Upload
 
-### Docker Deployment
+### 2. Train Models
+- Go to "Models" section
+- Configure model parameters
+- Select data types to include
+- Click "Start Training"
 
-```dockerfile
-# Build Docker image
-docker build -t multi-omics-platform .
+### 3. Make Predictions
+- Go to "Analysis" section
+- Enter patient ID
+- Select drug
+- Choose omics data types
+- Click "Predict Response"
 
-# Run container
-docker run -p 8000:8000 multi-omics-platform
-```
+### 4. Explore Results
+- View prediction scores and confidence
+- Explore biomarker importance
+- Analyze SHAP values
+- Discover key pathways
 
-### Cloud Deployment
+## 🧬 API Endpoints
 
-#### AWS
-- EC2 instances with GPU support
-- S3 for data storage
-- RDS for metadata storage
+### Data Management
+- `POST /api/v1/omics/upload` - Upload omics data
+- `GET /api/v1/omics/datasets` - List available datasets
+- `GET /api/v1/omics/patients/{patient_id}/data` - Get patient data
 
-#### Google Cloud
-- Compute Engine with GPUs
-- Cloud Storage for datasets
-- Cloud SQL for databases
+### Model Training
+- `POST /api/v1/models/train` - Train new models
+- `GET /api/v1/models/training/{job_id}/status` - Check training status
+- `GET /api/v1/models/architectures` - List available model types
+
+### Analysis
+- `POST /api/v1/analysis/predict` - Make drug response predictions
+- `POST /api/v1/analysis/explain` - Get prediction explanations
+- `GET /api/v1/analysis/biomarkers` - Discover biomarkers
+
+### System
+- `GET /api/v1/health` - Health check
+- `GET /api/v1/omics/status` - System status
+
+## 🔬 Scientific Background
+
+This platform implements state-of-the-art methods for:
+
+- **Multi-omics Integration**: Combines genomic, transcriptomic, and proteomic data
+- **Pharmacogenomics**: Predicts drug responses based on genetic variants
+- **Biomarker Discovery**: Identifies key molecular features
+- **Pathway Analysis**: Explores biological pathways and mechanisms
+
+## 📈 Performance
+
+- **Flexible Data Handling**: Supports any number of columns (3-20+)
+- **Real-time Processing**: Background data processing
+- **Scalable Architecture**: Handles large datasets efficiently
+- **Error Recovery**: Robust error handling and fallbacks
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow PEP 8 style guidelines
-- Write comprehensive tests
-- Document new features
-- Update README for significant changes
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/your-username/multi-omics-pharmacogenomics-platform/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/multi-omics-pharmacogenomics-platform/discussions)
-- **Email**: support@multiomics-platform.com
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙏 Acknowledgments
 
-- **Datasets**: 1000 Genomes Project, TCGA, GTEx, Human Protein Atlas, GDSC, PharmGKB
-- **Libraries**: TensorFlow, PyTorch, scikit-learn, pandas, numpy
-- **Community**: Open-source bioinformatics and machine learning communities
+- Built with FastAPI, scikit-learn, and modern web technologies
+- Inspired by the latest research in multi-omics and pharmacogenomics
+- Designed for both researchers and clinicians
 
-## 📚 Citation
+## 📞 Support
 
-If you use this platform in your research, please cite:
-
-```bibtex
-@software{multi_omics_pharmacogenomics_platform,
-  title={Multi-Omics Pharmacogenomics Platform},
-  subtitle={Integrating Multi-Omics Data for Precision Medicine in Pharmacogenomics Using Deep Learning},
-  author={Your Name},
-  year={2024},
-  url={https://github.com/your-username/multi-omics-pharmacogenomics-platform}
-}
-```
-
-## 🔬 Research Applications
-
-- **Precision Medicine**: Patient-specific drug response prediction
-- **Drug Discovery**: Novel biomarker identification
-- **Clinical Trials**: Patient stratification and selection
-- **Pharmacovigilance**: Adverse drug reaction prediction
-- **Biomarker Discovery**: Multi-omics signature identification
+For questions or support, please open an issue on GitHub.
 
 ---
 
-**Built with ❤️ for advancing precision medicine through AI**
+**Made with ❤️ for advancing personalized medicine through multi-omics analysis**

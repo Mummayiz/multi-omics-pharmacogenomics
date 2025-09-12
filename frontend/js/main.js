@@ -8,7 +8,8 @@ const AppState = {
     uploadedFiles: [],
     predictions: [],
     models: {},
-    activeTab: 'shap'
+    activeTab: 'shap',
+    selectedFiles: [] // Store selected files globally
 };
 
 // DOM Ready
@@ -32,11 +33,42 @@ function initializeApp() {
     // Initialize API health check (wait for ApiClient to be ready)
     waitForApiClient(checkAPIHealth);
     
+    // Add direct event listener to upload button as backup
+    setTimeout(() => {
+        const uploadBtn = document.querySelector('button[onclick="uploadFiles()"]');
+        if (uploadBtn) {
+            uploadBtn.addEventListener('click', function(e) {
+                console.log('🖱️ Upload button clicked via event listener!');
+                e.preventDefault();
+                uploadFiles();
+            });
+            console.log('✅ Upload button event listener attached');
+        } else {
+            console.error('❌ Upload button not found for event listener');
+        }
+    }, 1000);
+    
     console.log('Multi-Omics Platform initialized');
 }
 
 function getApi() {
-    return window.ApiClient || window.apiClient || window.API;
+    const api = window.ApiClient || window.apiClient || window.API;
+    console.log('🔍 getApi() called, returning:', api);
+    console.log('🔍 Available window objects:', {
+        ApiClient: window.ApiClient,
+        apiClient: window.apiClient,
+        API: window.API
+    });
+    
+    if (!api) {
+        console.error('❌ API client not found! Check console for details.');
+    } else {
+        console.log('✅ API client found:', api.constructor?.name || 'Unknown');
+        console.log('API client methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(api)));
+        console.log('Has uploadOmicsData?', typeof api.uploadOmicsData);
+    }
+    
+    return api;
 }
 
 function waitForApiClient(callback, retries = 20) {
@@ -125,11 +157,18 @@ function setupFileUpload() {
     const fileUploadArea = document.getElementById('fileUploadArea');
     const fileInput = document.getElementById('fileInput');
     
+    console.log('Setting up file upload:', { fileUploadArea, fileInput });
+    
     if (fileUploadArea && fileInput) {
+        // Remove existing event listeners to avoid duplicates
+        fileUploadArea.removeEventListener('click', handleFileUploadClick);
+        fileInput.removeEventListener('change', handleFileSelection);
+        fileUploadArea.removeEventListener('dragover', handleDragOver);
+        fileUploadArea.removeEventListener('drop', handleFileDrop);
+        fileUploadArea.removeEventListener('dragleave', handleDragLeave);
+        
         // Click to browse files
-        fileUploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
+        fileUploadArea.addEventListener('click', handleFileUploadClick);
         
         // File input change
         fileInput.addEventListener('change', handleFileSelection);
@@ -138,6 +177,20 @@ function setupFileUpload() {
         fileUploadArea.addEventListener('dragover', handleDragOver);
         fileUploadArea.addEventListener('drop', handleFileDrop);
         fileUploadArea.addEventListener('dragleave', handleDragLeave);
+        
+        console.log('✅ File upload setup complete');
+    } else {
+        console.error('❌ File upload setup failed - missing elements:', { fileUploadArea, fileInput });
+    }
+}
+
+/**
+ * Handle file upload area click
+ */
+function handleFileUploadClick() {
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        fileInput.click();
     }
 }
 
@@ -147,6 +200,9 @@ function setupFileUpload() {
 function handleFileSelection(event) {
     const files = event.target.files;
     if (files.length > 0) {
+        // Store files globally
+        AppState.selectedFiles = Array.from(files);
+        console.log('Files stored globally:', AppState.selectedFiles);
         displaySelectedFiles(files);
     }
 }
@@ -207,14 +263,57 @@ function formatFileSize(bytes) {
 /**
  * Show upload modal
  */
-function showUploadModal() {
-    console.log('📁 Show upload modal called!');
+function showUploadModal(dataType = 'genomics') {
+    console.log('📁 Show upload modal called with data type:', dataType);
     const modal = document.getElementById('uploadModal');
     if (modal) {
         modal.style.display = 'flex';
-        console.log('✅ Upload modal displayed');
+        
+        // Reset form fields and set data type
+        document.getElementById('uploadDataType').value = dataType;
+        document.getElementById('uploadPatientId').value = '';
+        
+        // Clear selected files
+        AppState.selectedFiles = [];
+        
+        // Ensure file upload area is properly set up
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        if (fileUploadArea) {
+            // Create the file input directly
+            fileUploadArea.innerHTML = `
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag & drop files here or click to browse</p>
+                <input type="file" id="fileInput" multiple>
+            `;
+            
+            // Setup immediately after creating
+            setupFileUpload();
+            console.log('✅ File input element created and setup complete');
+        }
+        
+        console.log('✅ Upload modal displayed with data type:', dataType);
     } else {
         console.error('❌ Upload modal not found!');
+    }
+}
+
+/**
+ * Test file input (for debugging)
+ */
+function testFileInput() {
+    const fileInput = document.getElementById('fileInput');
+    console.log('Test file input:', fileInput);
+    console.log('Global selected files:', AppState.selectedFiles);
+    
+    if (AppState.selectedFiles && AppState.selectedFiles.length > 0) {
+        console.log('Global files found! Files:', AppState.selectedFiles);
+        alert('Files found! Count: ' + AppState.selectedFiles.length + ', First file: ' + AppState.selectedFiles[0].name);
+    } else if (fileInput && fileInput.files) {
+        console.log('File input found! Files:', fileInput.files);
+        alert('File input found! Files: ' + (fileInput.files?.length || 0));
+    } else {
+        console.log('No files found!');
+        alert('No files found!');
     }
 }
 
@@ -227,17 +326,46 @@ function hideUploadModal() {
         modal.style.display = 'none';
         
         // Reset form
-        document.getElementById('uploadDataType').value = 'genomics';
-        document.getElementById('uploadPatientId').value = '';
-        document.getElementById('fileInput').value = '';
-        document.getElementById('fileUploadArea').innerHTML = `
+        const dataTypeSelect = document.getElementById('uploadDataType');
+        const patientIdInput = document.getElementById('uploadPatientId');
+        const fileInput = document.getElementById('fileInput');
+        
+        if (dataTypeSelect) dataTypeSelect.value = 'genomics';
+        if (patientIdInput) patientIdInput.value = '';
+        if (fileInput) fileInput.value = '';
+        
+        // Reset file upload area
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        fileUploadArea.innerHTML = `
             <i class="fas fa-cloud-upload-alt"></i>
             <p>Drag & drop files here or click to browse</p>
             <input type="file" id="fileInput" multiple>
         `;
         
-        // Hide progress
-        document.getElementById('uploadProgress').style.display = 'none';
+        // Re-attach event listeners
+        setupFileUpload();
+        
+        // Verify file input was created
+        const newFileInput = document.getElementById('fileInput');
+        if (!newFileInput) {
+            console.error('❌ Failed to recreate file input element');
+        } else {
+            console.log('✅ File input element recreated successfully');
+        }
+        
+        // Reset progress
+        const progressDiv = document.getElementById('uploadProgress');
+        progressDiv.style.display = 'none';
+        progressDiv.innerHTML = `
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">0%</span>
+        `;
+        
+        // Clear global files
+        AppState.selectedFiles = [];
+        console.log('Global files cleared');
     }
 }
 
@@ -249,42 +377,67 @@ async function uploadFiles() {
     
     const dataType = document.getElementById('uploadDataType').value;
     const patientId = document.getElementById('uploadPatientId').value;
-    const fileInput = document.getElementById('fileInput');
     
-    console.log('Upload params:', { dataType, patientId, files: fileInput.files });
+    console.log('Upload params:', { dataType, patientId, selectedFiles: AppState.selectedFiles });
     
+    // Validate inputs
     if (!patientId.trim()) {
         showNotification('Please enter a patient ID', 'warning');
         return;
     }
     
-    if (!fileInput.files || fileInput.files.length === 0) {
+    if (!AppState.selectedFiles || AppState.selectedFiles.length === 0) {
         showNotification('Please select files to upload', 'warning');
         return;
     }
     
+    // Check API client
+    const api = getApi();
+    if (!api) {
+        showNotification('API client not available', 'error');
+        return;
+    }
+    
+    if (!api.uploadOmicsData) {
+        showNotification('API client missing upload method', 'error');
+        return;
+    }
+    
     // Show progress
-    document.getElementById('uploadProgress').style.display = 'block';
+    const progressDiv = document.getElementById('uploadProgress');
+    if (progressDiv) {
+        progressDiv.style.display = 'block';
+    }
     
     try {
         console.log('Starting upload process...');
-        for (let i = 0; i < fileInput.files.length; i++) {
-            const file = fileInput.files[i];
-            console.log(`Uploading file ${i + 1}/${fileInput.files.length}:`, file.name);
-            await uploadSingleFile(file, dataType, patientId, i + 1, fileInput.files.length);
+        
+        for (let i = 0; i < AppState.selectedFiles.length; i++) {
+            const file = AppState.selectedFiles[i];
+            console.log(`Uploading file ${i + 1}/${AppState.selectedFiles.length}:`, file.name);
+            
+            try {
+                await uploadSingleFile(file, dataType, patientId, i + 1, AppState.selectedFiles.length);
+                console.log(`File ${i + 1} uploaded successfully!`);
+            } catch (fileError) {
+                console.error(`Error uploading file ${i + 1}:`, fileError);
+                throw fileError;
+            }
         }
         
         console.log('All files uploaded successfully');
         
         // Show success in modal
         const progressDiv = document.getElementById('uploadProgress');
-        progressDiv.innerHTML = `
-            <div style="text-align: center; color: #10b981; font-weight: bold;">
-                <i class="fas fa-check-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
-                <div>✅ Files uploaded successfully!</div>
-                <div style="font-size: 14px; margin-top: 5px;">Processing in background...</div>
-            </div>
-        `;
+        if (progressDiv) {
+            progressDiv.innerHTML = `
+                <div style="text-align: center; color: #10b981; font-weight: bold;">
+                    <i class="fas fa-check-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <div>✅ Files uploaded successfully!</div>
+                    <div style="font-size: 14px; margin-top: 5px;">Processing in background...</div>
+                </div>
+            `;
+        }
         
         // Show notification
         showNotification('✅ Files uploaded successfully!', 'success');
@@ -297,6 +450,12 @@ async function uploadFiles() {
     } catch (error) {
         console.error('Upload error:', error);
         showNotification('❌ Upload failed: ' + error.message, 'error');
+        
+        // Hide progress on error
+        const progressDiv = document.getElementById('uploadProgress');
+        if (progressDiv) {
+            progressDiv.style.display = 'none';
+        }
     }
 }
 
@@ -304,23 +463,34 @@ async function uploadFiles() {
  * Upload single file
  */
 async function uploadSingleFile(file, dataType, patientId, current, total) {
-    console.log('Uploading file:', file.name, 'Type:', dataType, 'Patient:', patientId);
+    console.log('📤 Uploading file:', file.name, 'Type:', dataType, 'Patient:', patientId);
     
     const formData = new FormData();
     formData.append('file', file);
     
     try {
-        const response = await getApi().uploadOmicsData(patientId, dataType, formData);
-        console.log('Upload response:', response);
+        console.log('📤 Calling API uploadOmicsData...');
+        const api = getApi();
+        console.log('📤 API client:', api);
+        
+        if (!api || !api.uploadOmicsData) {
+            throw new Error('API client not available or uploadOmicsData method missing');
+        }
+        
+        const response = await api.uploadOmicsData(patientId, dataType, formData);
+        console.log('✅ Upload response:', response);
         
         // Update progress
         const progress = (current / total) * 100;
-        document.getElementById('progressFill').style.width = `${progress}%`;
-        document.getElementById('progressText').textContent = `${Math.round(progress)}%`;
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        
+        if (progressFill) progressFill.style.width = `${progress}%`;
+        if (progressText) progressText.textContent = `${Math.round(progress)}%`;
         
         return response;
     } catch (error) {
-        console.error('Upload error in uploadSingleFile:', error);
+        console.error('❌ Upload error in uploadSingleFile:', error);
         throw error;
     }
 }
