@@ -1,4 +1,4 @@
-# Multi-Omics Pharmacogenomics Platform - Docker Configuration
+# Railway-optimized Dockerfile for Multi-Omics Platform
 FROM python:3.9-slim
 
 # Set working directory
@@ -8,6 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -26,13 +27,13 @@ RUN mkdir -p data/raw data/processed data/uploads logs models/saved
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Expose ports
-EXPOSE 8000 3000
+# Expose port (Railway will handle this)
+EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/api/v1/health || exit 1
 
-# Start the backend application (Railway will serve frontend separately)
+# Start the backend application
 WORKDIR /app/backend
 CMD ["python", "main.py"]
