@@ -135,11 +135,17 @@ class AnalysisResult(BaseModel):
     interpretability_data: Dict
 
 if __name__ == "__main__":
+    # Check if we're in production (Railway sets PORT environment variable)
+    port = int(os.environ.get("PORT", 8000))
+    reload = os.environ.get("ENVIRONMENT", "development") == "development"
+    
+    print(f"🚀 Starting server on port {port} (reload={reload})")
+    
     # Run the server
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,
+        port=port,
+        reload=reload,
         log_level="info"
     )
