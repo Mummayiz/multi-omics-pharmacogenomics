@@ -40,8 +40,17 @@ logger = logging.getLogger(__name__)
 real_data_loader = None
 try:
     if get_real_data_loader:
-        # Use parent directory for dataset file
-        real_data_loader = get_real_data_loader(data_dir="..")
+        # Try multiple paths for dataset file (Docker vs local)
+        import os
+        if os.path.exists("/app/pharmacogenomics_multiomics_50patients.csv"):
+            # Docker environment
+            real_data_loader = get_real_data_loader(data_dir="/app")
+        elif os.path.exists("../pharmacogenomics_multiomics_50patients.csv"):
+            # Local development from backend directory
+            real_data_loader = get_real_data_loader(data_dir="..")
+        else:
+            # Local development from project root
+            real_data_loader = get_real_data_loader(data_dir=".")
         logger.info("Real data loader initialized successfully")
 except Exception as e:
     logger.error(f"Failed to initialize real data loader: {e}")
