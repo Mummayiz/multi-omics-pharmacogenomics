@@ -110,8 +110,11 @@
                         <p>This layer maps the proteins present in a sample, including their levels and modifications, helping reveal functional changes that DNA or RNA alone cannot show.</p>
                     </div>
                 </div>
-
-                <div class="data-card">
+            </div>
+            
+            <!-- Centered Drug Response Card -->
+            <div style="display: flex; justify-content: center; margin-top: var(--spacing-lg);">
+                <div class="data-card" style="width: 100%; max-width: 400px;">
                     <div class="data-card-header">
                         <i class="fas fa-pills"></i>
                         <h3>Drug Response</h3>
@@ -119,6 +122,9 @@
                     <div class="data-card-content">
                         <p>Integrate pharmacological response data</p>
                         <p>Drug response data reflects how individuals react to therapies, including efficacy, side effects, and variability shaped by their molecular profiles.</p>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button class="btn btn-outline" onclick="showUploadModal('drug_response')">Upload Drug Data</button>
+                        </div>
                     </div>
                 </div>
             </div>
