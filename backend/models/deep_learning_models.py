@@ -99,14 +99,14 @@ class CNNModel:
         # Scale features
         X_scaled = self.scaler.fit_transform(X)
         
-        # Train model
+        # Train RNN
         self.model.fit(X_scaled, y)
         self.is_fitted = True
         
         return self
     
     def predict(self, X):
-        """Make predictions"""
+        """Make predictions - capped at 97% maximum"""
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
         
@@ -114,7 +114,9 @@ class CNNModel:
             X = X.values
         
         X_scaled = self.scaler.transform(X)
-        return self.model.predict(X_scaled)
+        predictions = self.model.predict(X_scaled)
+        # Cap predictions at 0.97 (97%) maximum
+        return np.clip(predictions, 0.0, 0.97)
     
     def save_model(self, filepath: str):
         """Save the trained model"""
@@ -217,7 +219,7 @@ class RNNModel:
         return self
     
     def predict(self, X):
-        """Make predictions"""
+        """Make predictions - capped at 97% maximum"""
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
         
@@ -225,7 +227,9 @@ class RNNModel:
             X = X.values
         
         X_scaled = self.scaler.transform(X)
-        return self.model.predict(X_scaled)
+        predictions = self.model.predict(X_scaled)
+        # Cap predictions at 0.97 (97%) maximum
+        return np.clip(predictions, 0.0, 0.97)
     
     def save_model(self, filepath: str):
         """Save the trained model"""
@@ -331,7 +335,7 @@ class AttentionModel:
         return self
     
     def predict(self, X):
-        """Make predictions"""
+        """Make predictions - capped at 97% maximum"""
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
         
@@ -339,7 +343,9 @@ class AttentionModel:
             X = X.values
         
         X_scaled = self.scaler.transform(X)
-        return self.model.predict(X_scaled)
+        predictions = self.model.predict(X_scaled)
+        # Cap predictions at 0.97 (97%) maximum
+        return np.clip(predictions, 0.0, 0.97)
     
     def get_attention_weights(self):
         """Get attention weights for features"""

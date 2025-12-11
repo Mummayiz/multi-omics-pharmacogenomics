@@ -713,12 +713,15 @@ async def predict_drug_response(request: PredictionRequest):
                     else:
                         raise ValueError(f"Required data type {data_key} not available")
                 
-                # Ensure prediction is in valid range [0, 1]
-                prediction = max(0.0, min(1.0, float(prediction)))
+                # Ensure prediction is in valid range [0, 0.97] - never exceed 97%
+                prediction = max(0.0, min(0.97, float(prediction)))
+                
+                # Cap confidence score at 0.97 as well
+                confidence = min(0.97, 0.85 + np.random.random() * 0.1)
                 
                 prediction_result = {
                     "predicted_response": prediction,
-                    "confidence_score": 0.85 + np.random.random() * 0.1,
+                    "confidence_score": confidence,
                     "model_used": trained_model['model_id'],
                     "model_type": model_type,
                     "model_performance": trained_model.get('performance_metrics', {})
@@ -829,9 +832,9 @@ def generate_patient_specific_prediction(patient_id: str, patient_data: Dict, dr
             base_response = 0.7 * base_response + 0.3 * actual
             confidence = 0.9
     
-    # Ensure within valid range
-    base_response = max(0.0, min(1.0, base_response))
-    confidence = max(0.0, min(1.0, confidence))
+    # Ensure within valid range - cap at 0.97 (97%) maximum
+    base_response = max(0.0, min(0.97, base_response))
+    confidence = max(0.0, min(0.97, confidence))
     
     return {
         "predicted_response": float(base_response),
@@ -942,15 +945,15 @@ def generate_default_prediction(patient_data: Dict, drug_id: str) -> Dict:
     }
     
     base_response += drug_adjustments.get(drug_id, 0)
-    base_response = max(0.0, min(1.0, base_response))
+    base_response = max(0.0, min(0.97, base_response))
     
     # Add some realistic noise
     noise = np.random.normal(0, 0.05)
-    final_response = max(0.0, min(1.0, base_response + noise))
+    final_response = max(0.0, min(0.97, base_response + noise))
     
     return {
         "predicted_response": float(final_response),
-        "confidence_score": 0.65 + np.random.random() * 0.2,
+        "confidence_score": min(0.97, 0.65 + np.random.random() * 0.2),
         "model_used": "default_heuristic"
     }
 
