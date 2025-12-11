@@ -21,7 +21,6 @@
             <div class="nav-menu">
                 <a href="#home" class="nav-link">Home</a>
                 <a href="#data" class="nav-link">Data</a>
-                <a href="#models" class="nav-link">Models</a>
                 <a href="#analysis" class="nav-link">Analysis</a>
                 <a href="#docs" class="nav-link">Documentation</a>
             </div>
@@ -150,90 +149,6 @@
                             <li>Clinical trial data</li>
                         </ul>
                         <button class="btn btn-outline" onclick="showUploadModal('drug_response')">Upload Drug Data</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Models Section -->
-    <section id="models" class="section bg-light">
-        <div class="container">
-            <h2>Deep Learning Models</h2>
-            <div class="models-architecture">
-                <div class="architecture-diagram">
-                    <div class="model-branch">
-                        <h4>Genomics CNN</h4>
-                        <div class="model-layers">
-                            <div class="layer">Conv1D</div>
-                            <div class="layer">BatchNorm</div>
-                            <div class="layer">ReLU</div>
-                            <div class="layer">MaxPool</div>
-                        </div>
-                    </div>
-
-                    <div class="model-branch">
-                        <h4>Transcriptomics RNN</h4>
-                        <div class="model-layers">
-                            <div class="layer">LSTM</div>
-                            <div class="layer">Dropout</div>
-                            <div class="layer">Dense</div>
-                        </div>
-                    </div>
-
-                    <div class="model-branch">
-                        <h4>Proteomics FC</h4>
-                        <div class="model-layers">
-                            <div class="layer">Dense</div>
-                            <div class="layer">ReLU</div>
-                            <div class="layer">Dropout</div>
-                            <div class="layer">Dense</div>
-                        </div>
-                    </div>
-
-                    <div class="fusion-block">
-                        <h4>Multi-Modal Fusion</h4>
-                        <div class="attention-mechanism">
-                            <div class="layer attention">Attention</div>
-                            <div class="layer">Concatenate</div>
-                            <div class="layer">Dense</div>
-                            <div class="layer output">Output</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="model-controls">
-                    <div class="control-panel">
-                        <h3>Model Configuration</h3>
-                        <div class="form-group">
-                            <label>Model Type:</label>
-                            <select id="modelType">
-                                <option value="multi_omics_fusion">Multi-Omics Fusion</option>
-                                <option value="genomics_cnn">Genomics CNN</option>
-                                <option value="transcriptomics_rnn">Transcriptomics RNN</option>
-                                <option value="proteomics_fc">Proteomics FC</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Learning Rate:</label>
-                            <input type="number" id="learningRate" value="0.001" step="0.0001">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Batch Size:</label>
-                            <input type="number" id="batchSize" value="32">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Cross-Validation Folds:</label>
-                            <input type="number" id="cvFolds" value="5">
-                        </div>
-
-                        <button class="btn btn-primary" onclick="trainModel()">
-                            <i class="fas fa-play"></i>
-                            Start Training
-                        </button>
                     </div>
                 </div>
             </div>
